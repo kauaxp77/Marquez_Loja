@@ -35,7 +35,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-[0.1em] text-white uppercase mb-6"
+            className="text-6xl md:text-8xl lg:text-9xl font-extrabold font-display tracking-[0.12em] text-white uppercase mb-6 drop-shadow-2xl"
           >
             MARQUEZ
           </motion.h2>
@@ -45,23 +45,22 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
           >
-            <p className="text-lg md:text-xl text-[#BFC0C2] tracking-widest uppercase mb-12">
-              ESTILO NÃO SE EXPLICA.<br />
-              SE VESTE.
+            <p className="text-base md:text-lg text-zinc-300 font-light tracking-[0.25em] uppercase mb-12">
+              ESTILO NÃO SE EXPLICA. SE VESTE.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href="/loja"
-                className="w-full sm:w-auto bg-white text-black px-12 py-4 font-semibold uppercase tracking-widest text-sm hover:bg-[#E5E5E5] transition-colors"
+                className="w-full sm:w-auto bg-white text-black px-12 py-4 font-bold uppercase tracking-[0.2em] text-xs hover:bg-zinc-200 transition-all shadow-xl"
               >
-                VER COLEÇÃO
+                Ver Coleção
               </Link>
               <Link
-                href="/sobre"
-                className="w-full sm:w-auto border border-white/30 text-white px-12 py-4 font-semibold uppercase tracking-widest text-sm hover:bg-white/10 hover:border-white transition-all"
+                href="/loja?categoria=camisetas"
+                className="w-full sm:w-auto border border-white/30 backdrop-blur-md bg-black/40 text-white px-12 py-4 font-bold uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black transition-all"
               >
-                CONHECER A MARCA
+                Lançamentos
               </Link>
             </div>
           </motion.div>
@@ -70,12 +69,21 @@ export default function Home() {
 
       {/* 2. CATEGORIES */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {CATEGORIES.slice(0, 6).map((category, index) => (
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <span className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase block mb-2">
+            Navegue por Segmento
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold font-display tracking-wider text-white uppercase">
+            Coleções MARQUEZ
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {CATEGORIES.slice(0, 6).map((category) => (
             <Link
               key={category}
               href={`/loja?categoria=${category.toLowerCase()}`}
-              className="group relative aspect-square sm:aspect-[4/3] lg:aspect-square overflow-hidden bg-[#121212]"
+              className="group relative aspect-square sm:aspect-[4/3] lg:aspect-square overflow-hidden bg-[#111114] border border-white/5 hover:border-white/20 transition-all"
             >
               {/* Image */}
               <img
@@ -85,13 +93,13 @@ export default function Home() {
               />
 
               {/* Overlay */}
-              <div className="absolute inset-0 bg-black/40 transition-opacity duration-500 group-hover:bg-black/60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent transition-opacity duration-500 group-hover:bg-black/60" />
 
               {/* Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                <h3 className="text-2xl font-bold tracking-widest text-white uppercase mb-4">{category}</h3>
-                <span className="flex items-center gap-2 text-sm font-medium tracking-[0.2em] text-white opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                  EXPLORAR <ArrowRight className="w-4 h-4" />
+                <h3 className="text-2xl font-bold font-display tracking-widest text-white uppercase mb-3">{category}</h3>
+                <span className="flex items-center gap-2 text-xs font-semibold tracking-[0.25em] text-white opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                  EXPLORAR <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </Link>
@@ -100,18 +108,22 @@ export default function Home() {
       </section>
 
       {/* 3. FEATURED PRODUCTS */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-[#1C1C1C]">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full border-t border-white/10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
-            <h2 className="text-3xl font-bold tracking-[0.15em] text-white uppercase">DESTAQUES</h2>
-            <h2 className="text-3xl font-bold tracking-[0.15em] text-white uppercase">MARQUEZ</h2>
+            <span className="text-[11px] font-mono tracking-widest uppercase text-zinc-400 block mb-1">
+              Seleção Especial
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold font-display tracking-wider text-white uppercase">
+              Destaques MARQUEZ
+            </h2>
           </div>
-          <Link href="/loja" className="text-sm font-medium tracking-widest text-[#BFC0C2] hover:text-white uppercase flex items-center gap-2 transition-colors">
-            Ver todos <ArrowRight className="w-4 h-4" />
+          <Link href="/loja" className="text-xs font-semibold tracking-widest text-zinc-300 hover:text-white uppercase flex items-center gap-2 transition-colors">
+            Ver catálogo completo <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6">
           {featuredProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}

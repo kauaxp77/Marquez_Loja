@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useMemo } from "react";
 import { ProductCard } from "@/components/ProductCard";
-import { CATEGORIES, MOCK_PRODUCTS } from "@/lib/data";
+import { CATEGORIES, MOCK_PRODUCTS, Size } from "@/lib/data";
 
 function LojaContent() {
     const searchParams = useSearchParams();
@@ -21,7 +21,7 @@ function LojaContent() {
         }
 
         if (filterSize) {
-            result = result.filter(p => p.sizes.includes(filterSize as any));
+            result = result.filter(p => p.sizes.includes(filterSize as Size));
         }
 
         if (sortBy === "menor-preco") {
@@ -40,56 +40,85 @@ function LojaContent() {
 
             {/* Sidebar Filters */}
             <aside className="w-full md:w-64 flex-shrink-0">
-                <h2 className="text-xl font-bold tracking-[0.15em] text-white uppercase mb-8">CATÁLOGO</h2>
+                <div className="border-b border-white/10 pb-4 mb-6">
+                    <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase block mb-1">
+                        Filtros
+                    </span>
+                    <h2 className="text-xl font-bold font-display tracking-wider text-white uppercase">
+                        Catálogo
+                    </h2>
+                </div>
 
                 <div className="space-y-8">
                     {/* Categoria */}
                     <div>
-                        <h3 className="text-sm font-medium tracking-widest text-white uppercase mb-4">CATEGORIA</h3>
-                        <div className="space-y-3">
-                            <label className="flex items-center gap-3 text-sm text-[#BFC0C2] hover:text-white cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="categoria"
-                                    checked={filterCategory === ""}
-                                    onChange={() => setFilterCategory("")}
-                                    className="bg-black border-[#1C1C1C] checked:bg-white text-black focus:ring-0 focus:ring-offset-0"
-                                />
+                        <h3 className="text-xs font-semibold tracking-widest text-white uppercase mb-3.5">
+                            Categoria
+                        </h3>
+                        <div className="space-y-2">
+                            <button
+                                type="button"
+                                onClick={() => setFilterCategory("")}
+                                className={`w-full text-left px-3 py-2 text-xs uppercase tracking-wider transition-all flex items-center justify-between border ${
+                                    filterCategory === ""
+                                        ? "bg-white text-black font-bold border-white"
+                                        : "bg-zinc-900/30 text-zinc-400 border-white/5 hover:border-white/20 hover:text-white"
+                                }`}
+                            >
                                 Todas
-                            </label>
-                            {CATEGORIES.map(cat => (
-                                <label key={cat} className="flex items-center gap-3 text-sm text-[#BFC0C2] hover:text-white cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="categoria"
-                                        checked={filterCategory.toLowerCase() === cat.toLowerCase()}
-                                        onChange={() => setFilterCategory(cat.toLowerCase())}
-                                        className="bg-black border-[#1C1C1C] checked:bg-white text-black focus:ring-0 focus:ring-offset-0"
-                                    />
-                                    {cat}
-                                </label>
-                            ))}
+                            </button>
+                            {CATEGORIES.map(cat => {
+                                const isSelected = filterCategory.toLowerCase() === cat.toLowerCase();
+                                return (
+                                    <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setFilterCategory(isSelected ? "" : cat.toLowerCase())}
+                                        className={`w-full text-left px-3 py-2 text-xs uppercase tracking-wider transition-all flex items-center justify-between border ${
+                                            isSelected
+                                                ? "bg-white text-black font-bold border-white"
+                                                : "bg-zinc-900/30 text-zinc-400 border-white/5 hover:border-white/20 hover:text-white"
+                                        }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* Tamanho */}
                     <div>
-                        <h3 className="text-sm font-medium tracking-widest text-white uppercase mb-4">TAMANHO</h3>
+                        <h3 className="text-xs font-semibold tracking-widest text-white uppercase mb-3.5">
+                            Tamanho
+                        </h3>
                         <div className="flex flex-wrap gap-2">
                             {["P", "M", "G", "GG", "XG", "U"].map(size => (
                                 <button
                                     key={size}
+                                    type="button"
                                     onClick={() => setFilterSize(filterSize === size ? "" : size)}
-                                    className={`w-10 h-10 border text-xs flex items-center justify-center transition-colors ${filterSize === size
-                                            ? "border-white bg-white text-black font-bold"
-                                            : "border-[#1C1C1C] text-[#BFC0C2] hover:border-white hover:text-white"
-                                        }`}
+                                    className={`w-10 h-10 border text-xs font-semibold flex items-center justify-center transition-all ${
+                                        filterSize === size
+                                            ? "border-white bg-white text-black font-bold scale-105"
+                                            : "border-white/10 bg-zinc-900/40 text-zinc-400 hover:border-white/30 hover:text-white"
+                                    }`}
                                 >
                                     {size}
                                 </button>
                             ))}
                         </div>
                     </div>
+
+                    {(filterCategory || filterSize) && (
+                        <button
+                            type="button"
+                            onClick={() => { setFilterCategory(""); setFilterSize(""); }}
+                            className="w-full py-2.5 text-[11px] uppercase tracking-widest text-zinc-400 hover:text-white border border-white/10 hover:border-white/30 transition-colors"
+                        >
+                            Limpar Filtros
+                        </button>
+                    )}
                 </div>
             </aside>
 
@@ -97,16 +126,16 @@ function LojaContent() {
             <div className="flex-1">
 
                 {/* Top Bar */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 pb-4 border-b border-[#1C1C1C]">
-                    <p className="text-sm tracking-wide text-[#BFC0C2]">
-                        Exibindo {filteredProducts.length} produtos
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 pb-4 border-b border-white/10">
+                    <p className="text-xs font-mono tracking-wide text-zinc-400">
+                        Exibindo <strong className="text-white">{filteredProducts.length}</strong> produtos
                     </p>
                     <div className="flex items-center gap-3">
-                        <span className="text-xs uppercase tracking-widest text-[#BFC0C2]">Ordenar por:</span>
+                        <span className="text-[11px] uppercase tracking-widest text-zinc-400 font-mono">Ordenar por:</span>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-black border border-[#1C1C1C] text-white text-sm py-2 px-3 focus:outline-none focus:border-white cursor-pointer"
+                            className="bg-zinc-900 border border-white/15 text-white text-xs py-2 px-3 focus:outline-none focus:border-white cursor-pointer uppercase tracking-wider"
                         >
                             <option value="recentes">Mais recentes</option>
                             <option value="menor-preco">Menor preço</option>
@@ -118,17 +147,17 @@ function LojaContent() {
 
                 {/* Product Grid */}
                 {filteredProducts.length > 0 ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-12 md:gap-x-8">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-12 md:gap-x-6">
                         {filteredProducts.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 ) : (
-                    <div className="py-24 text-center">
-                        <p className="text-lg text-[#BFC0C2] tracking-wide mb-6">Nenhum produto encontrado com estes filtros.</p>
+                    <div className="py-24 text-center bg-zinc-900/20 border border-white/5 p-8">
+                        <p className="text-sm text-zinc-400 tracking-wide mb-6">Nenhum produto encontrado com estes filtros.</p>
                         <button
                             onClick={() => { setFilterCategory(""); setFilterSize(""); }}
-                            className="border border-white/20 px-8 py-3 text-white text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors"
+                            className="border border-white/20 px-8 py-3 text-white text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors font-semibold"
                         >
                             Limpar Filtros
                         </button>
