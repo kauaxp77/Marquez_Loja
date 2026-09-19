@@ -1,89 +1,125 @@
 "use client";
 
-import { Product } from "@/lib/data";
+import { Product, Size } from "@/lib/data";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { Check, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 
 export function ProductCard({ product }: { product: Product }) {
-    const { addToCart } = useCart();
+    const { addToCart, setIsCartOpen } = useCart();
+    const [addedSize, setAddedSize] = useState<Size | null>(null);
 
-    // For the prototype, we add the first available size to the cart directly if clicked here, 
-    // or user goes to detail page to choose. Let's make the quick add just pick the first size 
-    // or redirect to detail page. The prompt asks for an Add to Cart button on hover.
-    const handleQuickAdd = (e: React.MouseEvent) => {
+    const handleSelectSize = (e: React.MouseEvent, size: Size) => {
         e.preventDefault();
-        if (product.sizes.length > 0) {
-            addToCart(product, product.sizes[0], 1);
-        }
+        e.stopPropagation();
+        addToCart(product, size, 1);
+        setAddedSize(size);
+        setTimeout(() => {
+            setAddedSize(null);
+            setIsCartOpen(true);
+        }, 400);
     };
+
+    const finalPrice = product.promotionalPrice || product.price;
 
     return (
         <Link href={`/produto/${product.slug}`} className="group block">
-            <div className="relative aspect-[3/4] bg-[#121212] overflow-hidden mb-4">
-                {/* Images */}
+            <div className="relative aspect-[3/4] bg-[#111114] border border-white/5 overflow-hidden mb-4 transition-all duration-500 group-hover:border-white/20">
+                {/* Images with smooth transition */}
                 <img
                     src={product.images[0]}
                     alt={product.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
+                    className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:opacity-0"
                 />
-                {product.images[1] && (
+                {product.images[1] ? (
                     <img
                         src={product.images[1]}
                         alt={product.name}
-                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 scale-105 group-hover:scale-100 transition-transform"
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100 group-hover:scale-100 scale-105"
+                    />
+                ) : (
+                    <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100"
                     />
                 )}
 
-                {/* Tags */}
-                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                {/* Minimalist Badges */}
+                <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
                     {product.newProduct && (
-                        <span className="bg-white text-black text-[10px] font-bold px-2 py-1 uppercase tracking-widest">
-                            New
+                        <span className="bg-black/80 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-[0.2em]">
+                            Novo
                         </span>
                     )}
                     {product.promotionalPrice && (
-                        <span className="bg-[#1C1C1C] text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest">
+                        <span className="bg-white text-black text-[9px] font-extrabold px-2 py-0.5 uppercase tracking-[0.2em]">
                             Sale
                         </span>
                     )}
                 </div>
 
-                {/* Quick Add Button */}
-                <div className="absolute bottom-4 left-4 right-4 translate-y-[150%] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                    <button
-                        onClick={handleQuickAdd}
-                        className="w-full bg-white text-black font-semibold py-3 flex items-center justify-center gap-2 uppercase tracking-wider text-xs hover:bg-[#E5E5E5]"
-                    >
-                        <ShoppingBag className="w-4 h-4" />
-                        Adicionar (+{product.sizes[0]})
-                    </button>
+                {/* Quick Add Tray on Hover */}
+                <div className="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                    <div className="bg-[#111114]/95 backdrop-blur-md border border-white/15 p-2.5 shadow-2xl">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] uppercase tracking-widest text-zinc-300 font-semibold flex items-center gap-1.5">
+                                <ShoppingBag className="w-3 h-3 text-white" />
+                                Escolha o tamanho:
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 justify-start overflow-x-auto custom-scrollbar pb-0.5">
+                            {product.sizes.map((size) => {
+                                const isJustAdded = addedSize === size;
+                                return (
+                                    <button
+                                        key={size}
+                                        onClick={(e) => handleSelectSize(e, size)}
+                                        className={`min-w-[32px] h-8 px-2 text-xs font-semibold uppercase tracking-wider transition-all flex items-center justify-center border ${
+                                            isJustAdded
+                                                ? "bg-emerald-400 text-black border-emerald-400 scale-105"
+                                                : "bg-black/50 text-white border-white/15 hover:bg-white hover:text-black hover:border-white"
+                                        }`}
+                                        title={`Adicionar tamanho ${size}`}
+                                    >
+                                        {isJustAdded ? <Check className="w-3 h-3 stroke-[3]" /> : size}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            {/* Product Meta */}
             <div>
-                <h3 className="text-sm font-medium text-white uppercase tracking-wider mb-1 group-hover:text-[#BFC0C2] transition-colors line-clamp-1">
+                <h3 className="text-sm font-medium text-white uppercase tracking-wider mb-1 group-hover:text-zinc-300 transition-colors line-clamp-1 font-display">
                     {product.name}
                 </h3>
-                <div className="flex items-center gap-3 mt-2 text-sm">
+                
+                <div className="flex items-baseline gap-2.5 mt-1.5 text-sm">
                     {product.promotionalPrice ? (
                         <>
-                            <span className="text-[#BFC0C2] line-through">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-                            <span className="text-white font-medium">R$ {product.promotionalPrice.toFixed(2).replace('.', ',')}</span>
+                            <span className="text-zinc-500 line-through text-xs font-mono">
+                                R$ {product.price.toFixed(2).replace('.', ',')}
+                            </span>
+                            <span className="text-white font-semibold font-mono">
+                                R$ {product.promotionalPrice.toFixed(2).replace('.', ',')}
+                            </span>
                         </>
                     ) : (
-                        <span className="text-white font-medium">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                        <span className="text-white font-semibold font-mono">
+                            R$ {product.price.toFixed(2).replace('.', ',')}
+                        </span>
                     )}
                 </div>
-                <div className="mt-3 flex gap-2">
-                    {product.sizes.map((size) => (
-                        <span key={size} className="text-[10px] text-[#BFC0C2] border border-[#1C1C1C] px-2 md:px-1.5 py-0.5 min-w-[24px] text-center">
-                            {size}
-                        </span>
-                    ))}
-                </div>
+
+                <p className="text-[11px] text-zinc-400 mt-1 tracking-wide">
+                    em até 3x de R$ {(finalPrice / 3).toFixed(2).replace('.', ',')}
+                </p>
             </div>
         </Link>
     );
 }
+
