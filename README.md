@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MARQUEZ — e-commerce de moda masculina
 
-## Getting Started
+Loja online de roupa masculina: vitrine, catálogo por categoria, página de produto com guia de
+tamanhos, carrinho e um checkout que fecha o pedido pelo WhatsApp.
 
-First, run the development server:
+**Não há back-end nem gateway de pagamento.** O catálogo é um arquivo TypeScript e o checkout
+monta a mensagem do pedido e abre a conversa com a loja. Para mudar o que está à venda, edite
+`src/lib/data.ts` — nada de painel, nada de banco.
+
+## Rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre em http://localhost:3000. Para produção, `npm run build` e `npm start`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## As telas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rota | O que é |
+|---|---|
+| `/` | Vitrine: destaques, lançamentos e as categorias |
+| `/loja` | Catálogo completo |
+| `/produto/[slug]` | Página do produto: fotos, tamanhos, guia de medidas e o botão do carrinho |
+| `/checkout` | Dados do cliente, forma de pagamento (PIX ou combinar) e envio do pedido pelo WhatsApp |
 
-## Learn More
+## O catálogo
 
-To learn more about Next.js, take a look at the following resources:
+Cada produto vive em `src/lib/data.ts` com nome, slug, descrição, preço, preço promocional,
+categoria, imagens, tamanhos, estoque e as marcas de destaque e lançamento. As categorias são
+Camisetas, Calças, Conjuntos, Moletons, Jaquetas e Acessórios.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Dentro do código
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/app/                   as quatro rotas (App Router)
+src/components/            Header, Footer, ProductCard, CartDrawer,
+                           SizeGuideModal, WhatsAppFloat
+src/lib/data.ts            o catálogo e os tipos
+src/lib/CartContext.tsx    o carrinho, em contexto React
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Framer Motion ·
+lucide-react. O deploy é na Vercel, sem configuração extra.
