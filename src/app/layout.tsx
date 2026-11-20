@@ -7,6 +7,16 @@ import { Footer } from "@/components/Footer";
 import { CartDrawer } from "@/components/CartDrawer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
+// Se uma foto de produto não carregar (ex.: link externo fora do ar), mostra uma imagem neutra da marca
+// no lugar do ícone de imagem quebrada. Roda antes da hidratação para pegar também os erros iniciais.
+const IMAGE_FALLBACK_SCRIPT = `window.addEventListener("error", function (e) {
+  var img = e.target;
+  if (img && img.tagName === "IMG" && !img.dataset.fallback) {
+    img.dataset.fallback = "1";
+    img.src = "/sem-foto.svg";
+  }
+}, true);`;
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -34,6 +44,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${syne.variable} antialiased h-full`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: IMAGE_FALLBACK_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col font-sans bg-[#09090b] text-white selection:bg-white selection:text-black">
         <CartProvider>
           <Header />
