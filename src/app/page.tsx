@@ -35,7 +35,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-6xl md:text-8xl lg:text-9xl font-extrabold font-display tracking-[0.12em] text-white uppercase mb-6 drop-shadow-2xl"
+            className="text-[clamp(1.75rem,9vw,8rem)] font-extrabold font-display tracking-[0.12em] text-white uppercase mb-6 drop-shadow-2xl"
           >
             MARQUEZ
           </motion.h2>
@@ -44,8 +44,9 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
+            className="w-full"
           >
-            <p className="text-base md:text-lg text-zinc-300 font-light tracking-[0.25em] uppercase mb-12">
+            <p className="text-sm md:text-lg text-zinc-300 font-light tracking-[0.15em] md:tracking-[0.25em] uppercase mb-12">
               ESTILO NÃO SE EXPLICA. SE VESTE.
             </p>
 
