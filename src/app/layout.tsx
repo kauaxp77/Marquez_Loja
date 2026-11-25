@@ -33,8 +33,21 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MARQUEZ | E-commerce Masculino Premium",
-  description: "Estilo não se explica. Se veste. Moda masculina premium.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://marquez-ecom.vercel.app"),
+  title: {
+    default: "MARQUEZ | Roupas Masculinas",
+    template: "%s | MARQUEZ",
+  },
+  description:
+    "MARQUEZ: roupas masculinas com estilo, conforto e qualidade em cada detalhe. Envio para todo o Brasil, pedido direto pelo WhatsApp.",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "MARQUEZ",
+    title: "MARQUEZ | Roupas Masculinas",
+    description: "Qualidade que veste com atitude. Vista o melhor. Escolha MARQUEZ.",
+    images: ["/logo-dark.png"],
+  },
 };
 
 export default function RootLayout({
@@ -50,7 +63,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans bg-[#09090b] text-white selection:bg-white selection:text-black">
         <CartProvider>
           <Header />
-          <main className="flex-grow flex flex-col">{children}</main>
+          <main id="conteudo" className="flex-grow flex flex-col">{children}</main>
           <Footer />
           <CartDrawer />
           <WhatsAppFloat />

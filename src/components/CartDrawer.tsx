@@ -4,12 +4,21 @@ import { useCart } from "@/lib/CartContext";
 import { X, Minus, Plus, ShoppingBag, Truck, Check, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-
-const FREE_SHIPPING_THRESHOLD = 350;
+import { useEffect } from "react";
+import { getFinalPrice } from "@/lib/data";
+import { FREE_SHIPPING_THRESHOLD, formatPrice } from "@/lib/store";
 
 export function CartDrawer() {
-    const { isCartOpen, setIsCartOpen, cartItems, updateQuantity, removeFromCart, cartTotal } = useCart();
+    const { isCartOpen, setIsCartOpen, cartItems, updateQuantity, removeFromCart, cartTotal, itemCount, getRemainingStock } = useCart();
     const router = useRouter();
+
+    // Fecha a sacola com a tecla Esc.
+    useEffect(() => {
+        if (!isCartOpen) return;
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setIsCartOpen(false);
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [isCartOpen, setIsCartOpen]);
 
     const handleCheckout = () => {
         setIsCartOpen(false);
@@ -17,7 +26,7 @@ export function CartDrawer() {
     };
 
     const progress = Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100);
-    const amountLeft = FREE_SHIPPING_THRESHOLD - cartTotal;
+    const amountLeft = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal);
 
     return (
         <AnimatePresence>
@@ -38,6 +47,9 @@ export function CartDrawer() {
                         animate={{ x: 0 }}
                         exit={{ x: "100%" }}
                         transition={{ type: "tween", duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Sacola de compras"
                         className="fixed top-0 right-0 bottom-0 w-full md:w-[460px] bg-[#0e0e11] z-50 border-l border-white/10 flex flex-col shadow-2xl"
                     >
                         {/* Header */}
@@ -47,7 +59,7 @@ export function CartDrawer() {
                                     Resumo do Carrinho
                                 </span>
                                 <h2 className="text-lg font-bold font-display tracking-wider text-white uppercase">
-                                    Sua Sacola ({cartItems.length})
+                                    Sua Sacola ({itemCount})
                                 </h2>
                             </div>
                             <button
@@ -66,11 +78,11 @@ export function CartDrawer() {
                                     <Truck className="w-4 h-4 text-white" />
                                     {amountLeft <= 0 ? (
                                         <span className="text-emerald-400 font-bold flex items-center gap-1">
-                                            <Check className="w-3.5 h-3.5 stroke-[3]" /> Parabéns! Você ganhou Frete Grátis
+                                            <Check className="w-3.5 h-3.5 stroke-[3]" /> Frete grátis (PAC) liberado!
                                         </span>
                                     ) : (
                                         <span>
-                                            Faltam <strong className="text-white font-mono">R$ {amountLeft.toFixed(2).replace('.', ',')}</strong> para frete grátis
+                                            Faltam <strong className="text-white font-mono">{formatPrice(amountLeft)}</strong> para frete grátis
                                         </span>
                                     )}
                                 </span>
@@ -102,7 +114,7 @@ export function CartDrawer() {
                                         Explore nossos lançamentos e eleve seu guarda-roupa com o padrão MARQUEZ.
                                     </p>
                                     <button
-                                        onClick={() => setIsCartOpen(false)}
+                                        onClick={() => { setIsCartOpen(false); router.push("/loja"); }}
                                         className="border border-white/20 px-8 py-3 hover:bg-white hover:text-black transition-all uppercase tracking-widest text-xs font-semibold text-white"
                                     >
                                         Explorar Coleção
@@ -130,7 +142,7 @@ export function CartDrawer() {
                                                         <button
                                                             onClick={() => removeFromCart(item.product.id, item.size)}
                                                             className="text-zinc-500 hover:text-red-400 transition-colors p-1"
-                                                            title="Remover item"
+                                                            aria-label={`Remover ${item.product.name} da sacola`}
                                                         >
                                                             <X className="w-3.5 h-3.5" />
                                                         </button>
@@ -140,7 +152,7 @@ export function CartDrawer() {
                                                             TAM: {item.size}
                                                         </span>
                                                         <span className="text-[10px] text-zinc-400">
-                                                            R$ {(item.product.promotionalPrice || item.product.price).toFixed(2).replace('.', ',')} un.
+                                                            {formatPrice(getFinalPrice(item.product))} un.
                                                         </span>
                                                     </div>
                                                 </div>
@@ -159,14 +171,16 @@ export function CartDrawer() {
                                                         </span>
                                                         <button
                                                             onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
-                                                            className="w-7 h-7 flex items-center justify-center hover:bg-white hover:text-black transition-colors"
+                                                            disabled={getRemainingStock(item.product) === 0}
+                                                            title={getRemainingStock(item.product) === 0 ? "Limite de estoque atingido" : undefined}
+                                                            className="w-7 h-7 flex items-center justify-center hover:bg-white hover:text-black transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-white"
                                                             aria-label="Aumentar quantidade"
                                                         >
                                                             <Plus className="w-3 h-3" />
                                                         </button>
                                                     </div>
                                                     <p className="font-semibold font-mono text-white text-sm">
-                                                        R$ {((item.product.promotionalPrice || item.product.price) * item.quantity).toFixed(2).replace('.', ',')}
+                                                        {formatPrice(getFinalPrice(item.product) * item.quantity)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -182,21 +196,21 @@ export function CartDrawer() {
                                 <div className="space-y-2 mb-5">
                                     <div className="flex items-center justify-between text-xs text-zinc-400">
                                         <span>Subtotal</span>
-                                        <span className="font-mono text-white">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
+                                        <span className="font-mono text-white">{formatPrice(cartTotal)}</span>
                                     </div>
                                     <div className="flex items-center justify-between text-xs text-zinc-400">
                                         <span>Frete</span>
                                         <span className="font-mono text-zinc-400">
                                             {amountLeft <= 0 ? (
-                                                <span className="text-emerald-400 font-semibold uppercase">Grátis</span>
+                                                <span className="text-emerald-400 font-semibold uppercase">Grátis (PAC)</span>
                                             ) : (
                                                 "Calculado no checkout"
                                             )}
                                         </span>
                                     </div>
                                     <div className="border-t border-white/10 pt-3 flex items-center justify-between text-white">
-                                        <span className="text-sm font-bold uppercase tracking-wider font-display">Total Previsto</span>
-                                        <span className="text-lg font-bold font-mono">R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
+                                        <span className="text-sm font-bold uppercase tracking-wider font-display">{amountLeft <= 0 ? "Total" : "Total sem frete"}</span>
+                                        <span className="text-lg font-bold font-mono">{formatPrice(cartTotal)}</span>
                                     </div>
                                 </div>
 
@@ -207,7 +221,7 @@ export function CartDrawer() {
                                     Finalizar Pedido <ArrowRight className="w-4 h-4" />
                                 </button>
                                 <p className="text-[10px] text-zinc-400 text-center mt-3 uppercase tracking-wider">
-                                    Checkout seguro via Pix e WhatsApp
+                                    Pedido confirmado pelo WhatsApp · Pix ou cartão
                                 </p>
                             </div>
                         )}
