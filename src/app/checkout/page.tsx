@@ -4,14 +4,14 @@ import { useCart } from "@/lib/CartContext";
 import { getFinalPrice } from "@/lib/data";
 import {
     FREE_SHIPPING_THRESHOLD,
-    STORE,
     ShippingId,
     formatPrice,
     getShippingOptions,
     roundMoney,
     whatsappUrl,
 } from "@/lib/store";
-import { ArrowLeft, CheckCircle2, Copy, Check, Truck, QrCode, MessageCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Truck, QrCode, MessageCircle, Loader2 } from "lucide-react";
+import { PixPayment } from "@/components/PixPayment";
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 
@@ -40,7 +40,6 @@ export default function CheckoutPage() {
     });
     const [selectedShipping, setSelectedShipping] = useState<ShippingId>("pac");
     const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("pix");
-    const [copiedPix, setCopiedPix] = useState(false);
     const [cepStatus, setCepStatus] = useState<"idle" | "loading" | "error">("idle");
     const [sentUrl, setSentUrl] = useState<string | null>(null);
 
@@ -89,15 +88,6 @@ export default function CheckoutPage() {
     const finalTotal = roundMoney(cartTotal + currentShipping.price);
     const amountLeft = roundMoney(FREE_SHIPPING_THRESHOLD - cartTotal);
 
-    const handleCopyPix = async () => {
-        try {
-            await navigator.clipboard.writeText(STORE.pixKey);
-            setCopiedPix(true);
-            setTimeout(() => setCopiedPix(false), 2500);
-        } catch {
-            // navegador sem permissão de área de transferência: a chave continua visível para copiar manualmente
-        }
-    };
 
     const lookupCep = async (digits: string) => {
         setCepStatus("loading");
@@ -323,19 +313,7 @@ export default function CheckoutPage() {
                             </div>
 
                             {paymentMethod === "pix" ? (
-                                <div className="p-4 bg-zinc-900/80 border border-white/10 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[11px] font-mono text-zinc-400 uppercase">Chave Pix ({STORE.pixKeyType}):</span>
-                                        <button type="button" onClick={handleCopyPix} className="text-[11px] font-semibold text-white hover:text-emerald-400 flex items-center gap-1.5 transition-colors uppercase tracking-wider">
-                                            {copiedPix ? (<><Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" /> Copiado!</>) : (<><Copy className="w-3.5 h-3.5" /> Copiar Chave</>)}
-                                        </button>
-                                    </div>
-                                    <div className="p-2.5 bg-black/60 border border-white/10 font-mono text-xs text-white text-center select-all break-all">{STORE.pixKeyDisplay}</div>
-                                    <p className="text-[11px] text-zinc-400 leading-relaxed">
-                                        Faça o Pix de <strong className="text-white">{formatPrice(finalTotal)}</strong> somente após a equipe confirmar o estoque
-                                        no WhatsApp, e envie o comprovante na mesma conversa.
-                                    </p>
-                                </div>
+                                <PixPayment amount={finalTotal} />
                             ) : (
                                 <p className="p-4 bg-zinc-900/80 border border-white/10 text-[11px] text-zinc-400 leading-relaxed">
                                     Enviamos um link de pagamento seguro pelo WhatsApp, em até 3x sem juros de {formatPrice(finalTotal / 3)}.

@@ -10,6 +10,9 @@ export const STORE = {
     pixKey: "+5561991774178",
     pixKeyDisplay: "(61) 99177-4178",
     pixKeyType: "Telefone",
+    // Aparecem no app do banco ao ler o QR Code (sem acento, até 25 e 15 letras).
+    pixMerchantName: "MARQUEZ",
+    pixMerchantCity: "BRASILIA",
 };
 
 // Frete grátis vale para o PAC a partir deste subtotal. SEDEX é sempre cobrado.
