@@ -42,8 +42,10 @@ export function Header() {
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-                solid ? "bg-black/90 backdrop-blur-md py-4 border-b border-white/5" : "bg-transparent py-6"
+            // A borda fica sempre presente e só muda de cor: remover a borda durante a animação
+            // fazia aparecer uma linha clara no topo ao voltar para o início da página.
+            className={`fixed top-0 left-0 right-0 z-40 border-b transition-[background-color,border-color,padding] duration-300 ${
+                solid ? "bg-black/90 backdrop-blur-md py-4 border-white/5" : "bg-transparent py-6 border-transparent"
             }`}
         >
             <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-black px-3 py-2 text-xs z-50">

@@ -3,8 +3,8 @@
 
 export const STORE = {
     // Número do WhatsApp comercial, só dígitos, com DDI 55 + DDD.
-    whatsappNumber: "556191774178",
-    whatsappDisplay: "(61) 9177-4178",
+    whatsappNumber: "5561991774178",
+    whatsappDisplay: "(61) 99177-4178",
     instagramHandle: "otl_marquez",
     pixKey: "wendesonkaua11@gmail.com",
     pixKeyType: "E-mail",
