@@ -330,7 +330,7 @@ export default function CheckoutPage() {
                                             {copiedPix ? (<><Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" /> Copiado!</>) : (<><Copy className="w-3.5 h-3.5" /> Copiar Chave</>)}
                                         </button>
                                     </div>
-                                    <div className="p-2.5 bg-black/60 border border-white/10 font-mono text-xs text-white text-center select-all break-all">{STORE.pixKey}</div>
+                                    <div className="p-2.5 bg-black/60 border border-white/10 font-mono text-xs text-white text-center select-all break-all">{STORE.pixKeyDisplay}</div>
                                     <p className="text-[11px] text-zinc-400 leading-relaxed">
                                         Faça o Pix de <strong className="text-white">{formatPrice(finalTotal)}</strong> somente após a equipe confirmar o estoque
                                         no WhatsApp, e envie o comprovante na mesma conversa.

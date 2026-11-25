@@ -6,8 +6,10 @@ export const STORE = {
     whatsappNumber: "5561991774178",
     whatsappDisplay: "(61) 99177-4178",
     instagramHandle: "otl_marquez",
-    pixKey: "wendesonkaua11@gmail.com",
-    pixKeyType: "E-mail",
+    // Chave Pix do tipo telefone: o valor copiado vai no formato +55 DDD número, que todos os bancos aceitam.
+    pixKey: "+5561991774178",
+    pixKeyDisplay: "(61) 99177-4178",
+    pixKeyType: "Telefone",
 };
 
 // Frete grátis vale para o PAC a partir deste subtotal. SEDEX é sempre cobrado.
